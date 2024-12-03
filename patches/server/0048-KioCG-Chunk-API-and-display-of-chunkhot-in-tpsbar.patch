@@ -5,7 +5,7 @@ Subject: [PATCH] KioCG Chunk API and display of chunkhot in tpsbar
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/ChunkSystem.java b/src/main/java/ca/spottedleaf/moonrise/common/util/ChunkSystem.java
-index e1aba122e1c3d8b28ca16137fb15bcee07cdf0e7..af4bb03fda9ee9a8081e2a6345ebe86d18cdaacc 100644
+index 30eb7fd0b83ad1626d337cb770fac3dda5202344..cbe8f1fce4327bcc2a677b3da268cf52fef90335 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/util/ChunkSystem.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/util/ChunkSystem.java
 @@ -127,6 +127,7 @@ public final class ChunkSystem {
@@ -179,10 +179,10 @@ index 026807e0851d67c6d57e81f573ac1bf8fedc6109..c45f6bd60d1cf7a915aa6ceea07c0929
          if (mspt == -1){
              return BossBar.Color.valueOf(TpsBarConfig.tpsColors.get(3));
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index d54b5a0c4efd25d2792ab0ff69985eab663ab253..90f4e67daa58088d06f61f005acf2a67e8f41da3 100644
+index 420b0f22bb58cab43ff4b707bd40823ab2cad9bd..968f96e6fa971ad06b2a961071f1f80bc6dcfe97 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1800,6 +1800,29 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1801,6 +1801,29 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              } finally { foliaProfiler.stopTimer(ca.spottedleaf.leafprofiler.LProfilerRegistry.ENTITY_SCHEDULER_TICK); } // Folia - profiler
          }
          // Folia end - region threading
@@ -212,7 +212,7 @@ index d54b5a0c4efd25d2792ab0ff69985eab663ab253..90f4e67daa58088d06f61f005acf2a67
          if (region == null) this.tickRateManager.tick(); // Folia - region threading
          this.tickChildren(shouldKeepTicking, region); // Folia - region threading
          if (region == null && i - this.lastServerStatus >= MinecraftServer.STATUS_EXPIRE_TIME_NANOS) { // Folia - region threading
-@@ -1808,6 +1831,20 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1809,6 +1832,20 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
  
          // Folia - region threading
@@ -234,7 +234,7 @@ index d54b5a0c4efd25d2792ab0ff69985eab663ab253..90f4e67daa58088d06f61f005acf2a67
          final ProfilerFiller profiler = Profiler.get();
          int playerSaveInterval = io.papermc.paper.configuration.GlobalConfiguration.get().playerAutoSave.rate;
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 230b448d8dd5c49e2cd45d9f06a439912402d914..0eba44f94da54716e94f00b919124eedbed53514 100644
+index 71a8aa164d48ec632c8dcb24ff0073e26b67bb9e..c95c731cdcf02a338a6a437c0195d6f5f267fefb 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1381,6 +1381,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -272,7 +272,7 @@ index 230b448d8dd5c49e2cd45d9f06a439912402d914..0eba44f94da54716e94f00b919124eed
          } else {
              passenger.stopRiding();
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 225617af39a5ae5f2c0078aa030fb0a42250e9db..824c27f7626c0e12da060286b90c920ad84ae5ff 100644
+index 61726ff1fecb1e153a95328c37787dd2070ff0c4..dbf97cb39362e907dcde7b773c902fec3256d56a 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -361,6 +361,26 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
@@ -302,7 +302,7 @@ index 225617af39a5ae5f2c0078aa030fb0a42250e9db..824c27f7626c0e12da060286b90c920a
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -1205,6 +1225,12 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+@@ -1202,6 +1222,12 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
          this.trackEnteredOrExitedLavaOnVehicle();
          this.updatePlayerAttributes();
          this.advancements.flushDirty(this);
@@ -503,7 +503,7 @@ index 0074bc0e7147dc3a8c538e796f14ac9bf8725896..90b2bfd12236fce24ddcc48b00e0121f
 +    // KioCG end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 611caf02205a7a97aa1175ab6250124d547bd071..f37d75af2f70727090d9efadbe3fd1108cd7e50f 100644
+index 01aca615a7fe4baa38d4020f7f3ccd63539fe546..2912d1a4b8b1926429655af76c5da8fde77a1759 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -3611,4 +3611,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
